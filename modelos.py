@@ -21,7 +21,7 @@ class Mision(base):
     nombre = Column(String(50), nullable=False)
     descripcion = Column(String(255), nullable=False)
     experiencia = Column(Integer, nullable=False)
-    estado = Column(Enum('pendiente', 'completada', name='estados'), nullable=False)
+    estado = Column(Enum('pendiente', 'completada', name='estados'), nullable=False)    # Si la completa uno de los personajes, se cambia el estado a completada
     fecha_creacion = Column(DateTime, default=func.now())   # func.now() le dirá al motor de base de datos que use la fecha y hora actuales
 
     # Relacion con PersonajeMision

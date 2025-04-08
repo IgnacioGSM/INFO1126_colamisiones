@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from modelos import Personaje, Mision, PersonajeMision
+from Cola import encolar_mision, completar_mision
 
 app = FastAPI()
 
@@ -21,3 +22,38 @@ def crear_mision(nombre, descripcion, experiencia, db: Session = Depends(get_db)
     db.commit()
     db.refresh(nueva_mision)
     return {"message": "Misión creada", "mision": nueva_mision.nombre}
+
+@app.post("/personajes/{personaje_id}/misiones/{mision_id}")
+def encolar_mision_api(personaje_id: int, mision_id: int, db: Session = Depends(get_db)):
+    # Verificar si el personaje y la misión existen
+    personaje = db.query(Personaje).filter(Personaje.id == personaje_id).first()
+    mision = db.query(Mision).filter(Mision.id == mision_id).first()
+    if not personaje:
+        return {"message": "Personaje no encontrado"}
+    if not mision:
+        return {"message": "Misión no encontrada"}
+    
+    # Verificar si la misión está pendiente
+    if mision.estado != 'pendiente':
+        return {"message": "La misión ya ha sido completada"}
+    
+    # Verificar si el personaje ya tiene la misión
+    mision_existente = db.query(PersonajeMision).filter(PersonajeMision.personaje_id == personaje_id, PersonajeMision.mision_id == mision_id).first()
+    if mision_existente:
+        return {"message": "La misión ya está encolada para este personaje"}
+    
+    # Encolar la misión
+    resultado = encolar_mision(db, personaje_id, mision_id)
+    return resultado
+
+@app.post("/personajes/{personaje_id}/completar")
+def completar_mision_api(personaje_id: int, db: Session = Depends(get_db)):
+    # Verificar si el personaje existe
+    personaje = db.query(Personaje).filter(Personaje.id == personaje_id).first()
+    if not personaje:
+        return {"message": "Personaje no encontrado"}
+    
+    # Completar la primera misión en la cola del personaje
+    resultado = completar_mision(db, personaje_id)
+    # si no hay misiones el resultado lo dirá
+    return resultado
