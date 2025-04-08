@@ -2,9 +2,19 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from modelos import Personaje, Mision, PersonajeMision
-from Cola import encolar_mision, completar_mision, listar_misiones
+from Cola import encolar_mision, completar_mision, listar_misiones, mostrar_primera_mision
 
 app = FastAPI()
+
+@app.get("/personajes")
+def listar_personajes(db: Session = Depends(get_db)):
+    personajes = db.query(Personaje).all()
+    return {"personajes": [personaje for personaje in personajes]}
+
+@app.get("/misiones")
+def listar_misiones_api(db: Session = Depends(get_db)):
+    misiones = db.query(Mision).all()
+    return {"misiones": [mision for mision in misiones]}
 
 
 @app.post("/personajes")
@@ -68,3 +78,12 @@ def obtener_misiones_personaje(personaje_id: int, db: Session = Depends(get_db))
     # Listar las misiones en la cola del personaje
     misiones = listar_misiones(db, personaje_id)
     return misiones
+
+@app.get("/personajes/{personaje_id}/misiones/siguiente")
+def obtener_siguiente_mision(personaje_id: int, db: Session = Depends(get_db)):
+    # Verificar si el personaje existe
+    personaje = db.query(Personaje).filter(Personaje.id == personaje_id).first()
+    if not personaje:
+        return {"message": "Personaje no encontrado"}
+    
+    return mostrar_primera_mision(db, personaje_id)
