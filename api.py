@@ -13,3 +13,11 @@ def crear_personaje(nombre,db: Session = Depends(get_db)):
     db.commit()
     db.refresh(nuevo_personaje)
     return {"message": "Personaje creado", "personaje": nuevo_personaje.nombre}
+
+@app.post("/misiones")
+def crear_mision(nombre, descripcion, experiencia, db: Session = Depends(get_db)):
+    nueva_mision = Mision(nombre=nombre, descripcion=descripcion, experiencia=experiencia, estado='pendiente')
+    db.add(nueva_mision)
+    db.commit()
+    db.refresh(nueva_mision)
+    return {"message": "Misión creada", "mision": nueva_mision.nombre}

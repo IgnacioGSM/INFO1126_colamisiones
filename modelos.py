@@ -33,6 +33,7 @@ class PersonajeMision(base):
     __tablename__ = 'personajes_misiones'
     personaje_id = Column(Integer, ForeignKey('personajes.id'), primary_key=True)
     mision_id = Column(Integer, ForeignKey('misiones.id'), primary_key=True)
+    orden = Column(Integer, nullable=False)  # Orden de la misión para el personaje
 
     # Relaciones inversas
     personaje = relationship("Personaje", back_populates="misiones")    # back popula el nombre de la relación en la clase Personaje
