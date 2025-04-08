@@ -52,3 +52,25 @@ def completar_mision(db, personaje_id):
         return {"message": "Personaje no encontrado"}
 
     return {"message": "Misión completada", "mision_id": mision.id, "completada por el personaje con id:": personaje_id}
+
+
+def listar_misiones(db, personaje_id):
+    # Obtiene todas las misiones en el orden de la cola
+    misiones = db.query(PersonajeMision).filter(PersonajeMision.personaje_id == personaje_id).order_by(PersonajeMision.orden).all()
+    if not misiones:
+        return {"message": "No hay misiones en la cola para este personaje"}
+    
+    # Obtener los detalles de las misiones
+    misiones_detalles = []
+    orden_personal = 0
+    for mision_relacion in misiones:
+        mision = db.query(Mision).filter(Mision.id == mision_relacion.mision_id).first()
+        if mision:
+            orden_personal += 1
+            misiones_detalles.append({
+                "mision_id": mision.id,
+                "nombre": mision.nombre,
+                "descripcion": mision.descripcion,
+                "orden": orden_personal
+            })
+    return {"misiones": misiones_detalles}
