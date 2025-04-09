@@ -1,5 +1,5 @@
 # Operaciones que afectan a la base de datos usando la logica de una estructura FIFO
-from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey, func
+from sqlalchemy import func
 from modelos import Personaje, Mision, PersonajeMision
 
 def tiene_misiones(db, personaje_id):   # is_empty
