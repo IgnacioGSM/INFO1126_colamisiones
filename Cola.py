@@ -29,7 +29,7 @@ def encolar_mision(db, personaje_id, mision_id):
 
 def completar_mision(db, personaje_id):
     # Obtener la primera misión en la cola del personaje
-    mision_relacion = db.query(PersonajeMision).filter(PersonajeMision.personaje_id == personaje_id).first() # Devolverá la primera misión en la cola o None si no hay misiones
+    mision_relacion = db.query(PersonajeMision).filter(PersonajeMision.personaje_id == personaje_id).order_by(PersonajeMision.orden).first() # Devolverá la primera misión en la cola o None si no hay misiones
     if not mision_relacion:
         return {"message": "No hay misiones en la cola para este personaje"}
     
@@ -85,7 +85,7 @@ def listar_misiones(db, personaje_id):
 
 def mostrar_primera_mision(db, personaje_id):           # first
     # Obtener la primera misión en la cola del personaje
-    mision_relacion = db.query(PersonajeMision).filter(PersonajeMision.personaje_id == personaje_id).first() # Devolverá la primera misión en la cola o None si no hay misiones
+    mision_relacion = db.query(PersonajeMision).filter(PersonajeMision.personaje_id == personaje_id).order_by(PersonajeMision.orden).first() # Obtener la primera misión en la cola ordenada por "orden" descendente
     if not mision_relacion:
         return {"message": "No hay misiones en la cola para este personaje"}
     
